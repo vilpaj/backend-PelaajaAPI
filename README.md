@@ -1,6 +1,6 @@
 backend PelaajaAPI
 
-muista venv!
+muista venv ( en tie miten se tehdään omenalla mut kyl sä juho sen osaat :D)
 ```
 pip install fastapi uvicorn
 pip install sqlmodel
