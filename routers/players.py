@@ -36,17 +36,23 @@ def get_playerID(id: int, session: Session = Depends(get_session)):
         }
         return player_data
 
+hardcoded_eventtype = ["level_started", "level_solved"]
+
 #hae pelaaja ID event
-@router.get("/{id}/events", response_model=List[EventDB])
-def get_player_event(id: int, type: str, session: Session = Depends(get_session)):
+@router.get("/{id}/events", response_model=List[EventDB] | None)
+def get_player_event(id: int, type: str | None = None, session: Session = Depends(get_session)):
     player_events = events_crud.fetch_playerID(session, id)
-    if not player_events:
+    if player_events is None:
         raise HTTPException(status_code=404)
     if type:
+        if type not in hardcoded_eventtype:
+            raise HTTPException(status_code=400)
         filtered_event = [event for event in player_events if event.type == type]
         if not filtered_event:
             raise HTTPException(status_code=404)
         return filtered_event
+    else:
+        return player_events or []
 
 #luo uusi event pelaajalle
 @router.post("/{id}/events", status_code=status.HTTP_201_CREATED)

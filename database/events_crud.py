@@ -9,6 +9,8 @@ hardcoded_eventtype = ["level_started", "level_solved"]
 #hae pelaaja ID
 def fetch_playerID(session: Session, player_id: int) -> list[EventDB]:
     db_events = session.exec(select(EventDB).filter(EventDB.player_id == player_id)).all()
+    if not db_events:
+        return None
     return db_events
 
 #luo uusi event pelaajalle
@@ -33,13 +35,3 @@ def get_events(session: Session, event_type: str | None = None) -> List[EventDB]
         raise HTTPException(status_code=400)
     else:
         return [event for event in added_events if event.type == event_type]
-    
-
-#poista event
-def delete_event(session: Session, id: int):
-    event = session.get(EventDB,id)
-    if event is None:
-        raise HTTPException(status_code=404, detail=f'VIRHE')
-    session.delete(event)
-    session.commit()
-    return {"message": f'POISTETTU {id}'}
